@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}QR Code Phishing Detection - PhishGuard AI{% endblock %}
+
+{% block content %}
+<section class="detection-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="detection-header text-center mb-5">
+          <div class="detection-icon">
+            <i class="fas fa-qrcode"></i>
+          </div>
+          <h1 class="detection-title">QR Code Phishing Detection</h1>
+          <p class="detection-subtitle">
+            Upload a QR code image to scan the embedded link for phishing risk.
+          </p>
+        </div>
+        <div class="detection-card">
+          <form id="qrForm" enctype="multipart/form-data">
+             <div class="mb-4">
+                <label class="form-label"><i class="fas fa-qrcode"></i> QR Code Source</label><br>
+                <button type="button" id="openCameraBtn" class="btn btn-outline-cyber mb-2">
+                <i class="fas fa-camera"></i> Use Camera
+                </button>
+                <button type="button" id="openUploadBtn" class="btn btn-outline-cyber mb-2">
+                <i class="fas fa-upload"></i> Upload Image
+                </button>
+                <!-- Video preview for camera capture -->
+                <video id="video" width="100%" style="display:none; border-radius:12px; margin-bottom:12px;" autoplay></video>
+                <!-- File input for image upload -->
+                <input type="file" class="form-control form-control-cyber" id="qrInput" accept="image/*" style="display:none;">
+                <!-- Canvas for camera capture (hidden) -->
+                <canvas id="canvas" style="display:none;"></canvas>
+            </div>
+            <button class="btn btn-cyber w-100" type="submit" id="scanBtn">
+                <i class="fas fa-search"></i> Scan QR Code
+            </button>
+            </form>
+
+          <!-- Loading Spinner -->
+          <div id="loading" class="loading-spinner" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Analyzing...</span>
+            </div>
+            <p class="mt-3">Analyzing QR Code...</p>
+          </div>
+          <!-- Results Section -->
+          <div id="results" style="display: none;">
+            <div class="alert alert-cyber" id="resultAlert">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">
+                  <i class="fas fa-chart-pie"></i> Analysis Results
+                </h4>
+                <span class="badge" id="riskBadge"></span>
+              </div>
+              <div class="result-url mb-3">
+                <strong>Extracted Content:</strong>
+                <p class="text-break mb-0" id="qrContent"></p>
+              </div>
+              <div class="risk-meter mb-4">
+                <label class="mb-2"><strong>Risk Score</strong></label>
+                <div class="progress" style="height: 30px;">
+                  <div
+                    class="progress-bar progress-bar-striped progress-bar-animated"
+                    id="riskProgress"
+                    role="progressbar"
+                    style="width: 0%"
+                  >
+                    <span id="riskScore">0</span>%
+                  </div>
+                </div>
+              </div>
+              <div class="classification mb-4">
+                <h5><i class="fas fa-diagnoses"></i> Classification</h5>
+                <p class="lead mb-0" id="classification"></p>
+              </div>
+              <div class="warnings" id="warningsSection">
+                <h5><i class="fas fa-exclamation-triangle"></i> Detected Issues</h5>
+                <ul class="warning-list" id="warningsList"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="info-section mt-5">
+          <h3 class="mb-4"><i class="fas fa-lightbulb"></i> What We Do</h3>
+          <div class="info-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Decode QR images to extract URLs or text</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Analyze extracted links with phishing detection logic</span>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Report suspicious QR codes before they can cause harm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const openCameraBtn = document.getElementById('openCameraBtn');
+const openUploadBtn = document.getElementById('openUploadBtn');
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const qrInput = document.getElementById('qrInput');
+let stream;
+
+// Camera button: show camera, hide file input
+openCameraBtn.onclick = async function() {
+  qrInput.style.display = 'none';
+  video.style.display = 'block';
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = stream;
+  }
+}
+
+// Upload button: show file input, hide camera
+openUploadBtn.onclick = function() {
+  video.style.display = 'none';
+  qrInput.style.display = 'block';
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+}
+
+// On form submit, either grab photo from camera or uploaded file
+document.getElementById('qrForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const loading = document.getElementById('loading');
+  const results = document.getElementById('results');
+  loading.style.display = 'block';
+  results.style.display = 'none';
+
+  let imageBlob;
+  if (video.style.display === 'block' && stream) {
+    // Capture from camera
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const dataUrl = canvas.toDataURL('image/png');
+    imageBlob = await (await fetch(dataUrl)).blob();
+    stream.getTracks().forEach(track => track.stop());
+    video.style.display = 'none';
+  } else if (qrInput.style.display === 'block' && qrInput.files.length > 0) {
+    // Use uploaded file
+    imageBlob = qrInput.files[0];
+  } else {
+    alert('Please capture a photo or upload an image.');
+    loading.style.display = 'none';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('qr_image', imageBlob);
+
+  try {
+    const response = await fetch('/api/analyze-qr', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+    if (response.ok) {
+      displayResults(data);
+    } else {
+      alert('Error: ' + (data.error || 'Analysis failed'));
+    }
+  } catch (error) {
+    alert('Error: ' + error.message);
+  } finally {
+    loading.style.display = 'none';
+  }
+});
+
+document.getElementById('qrForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const fileInput = document.getElementById('qrInput');
+  const file = fileInput.files[0];
+  const loading = document.getElementById('loading');
+  const results = document.getElementById('results');
+  if (!file) {
+    alert('Please select a QR code image');
+    return;
+  }
+  loading.style.display = 'block';
+  results.style.display = 'none';
+  const formData = new FormData();
+  formData.append('qr_image', file);
+  try {
+    const response = await fetch('/api/analyze-qr', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+    if (response.ok) {
+      displayResults(data);
+    } else {
+      alert('Error: ' + (data.error || 'Analysis failed'));
+    }
+  } catch (error) {
+    alert('Error: ' + error.message);
+  } finally {
+    loading.style.display = 'none';
+  }
+});
+
+function displayResults(data) {
+  const results = document.getElementById('results');
+  const resultAlert = document.getElementById('resultAlert');
+  const riskBadge = document.getElementById('riskBadge');
+  const qrContent = document.getElementById('qrContent');
+  const riskProgress = document.getElementById('riskProgress');
+  const riskScore = document.getElementById('riskScore');
+  const classification = document.getElementById('classification');
+  const warningsList = document.getElementById('warningsList');
+  // Color
+  const colorClass = data.color === 'danger' ? 'alert-danger' :
+                     data.color === 'warning' ? 'alert-warning' : 'alert-success';
+  resultAlert.className = 'alert alert-cyber ' + colorClass;
+  // Badge
+  riskBadge.className = 'badge bg-' + data.color;
+  riskBadge.textContent = data.classification;
+  // QR Content
+  qrContent.textContent = data.qr_content ;
+  // Risk
+  riskScore.textContent = data.risk_score;
+  riskProgress.style.width = data.risk_score + '%';
+  riskProgress.className = 'progress-bar progress-bar-striped progress-bar-animated bg-' + data.color;
+  // Classification
+  classification.textContent = data.classification;
+  // Warnings
+  warningsList.innerHTML = '';
+  if (data.warnings && data.warnings.length > 0) {
+    data.warnings.forEach(warning => {
+      const li = document.createElement('li');
+      li.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + warning;
+      warningsList.appendChild(li);
+    });
+  } else {
+    warningsList.innerHTML = '<li><i class="fas fa-check-circle"></i> No suspicious patterns detected</li>';
+  }
+  results.style.display = 'block';
+  results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+{% endblock %}

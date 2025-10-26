@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}PhishGuard AI - Advanced Phishing Detection System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="display-3 fw-bold mb-4">
+                        <span class="cyber-text">PhishGuard AI</span>
+                    </h1>
+                    <h2 class="h3 mb-4">Advanced Multi-Vector Phishing Detection System</h2>
+                    <p class="lead mb-4">
+                        Protect yourself from sophisticated phishing attacks using cutting-edge AI and machine learning technology. 
+                        Detect malicious URLs, fraudulent emails, and deepfake audio calls in real-time.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('url_detection') }}" class="btn btn-cyber btn-lg">
+                            <i class="fas fa-rocket"></i> Get Started
+                        </a>
+                        <a href="#features" class="btn btn-outline-cyber btn-lg">
+                            <i class="fas fa-info-circle"></i> Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image">
+                    <div class="cyber-shield">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="stat-number">&lt;2s</h3>
+                    <p class="stat-label">Analysis Time</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="stat-number">24/7</h3>
+                    <p class="stat-label">Protection</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Features Section -->
+<section class="features-section" id="features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Detection Capabilities</h2>
+            <p class="section-subtitle">Multi-layered protection against modern phishing attacks</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h3 class="feature-title">URL Phishing Detection</h3>
+                    <p class="feature-description">
+                        Analyze suspicious URLs in real-time. Our system examines URL structure, domain age, 
+                        redirections other features to identify malicious links before you click.
+                    </p>
+                    <a href="{{ url_for('url_detection') }}" class="feature-link">
+                        Scan URL <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+                    <h3 class="feature-title">Email/Message Scanner</h3>
+                    <p class="feature-description">
+                        Detect phishing emails and malicious messages using NLP and pattern recognition. 
+                        Identifies social engineering tactics, suspicious senders, and deceptive content.
+                    </p>
+                    <a href="{{ url_for('email_detection') }}" class="feature-link">
+                        Scan Email <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Audio Call Fraud Detection</h3>
+                    <p class="feature-description">
+                        Detect deepfake audio and fraudulent phone calls. Advanced ML models analyze voice 
+                        patterns, background noise, and speech characteristics to identify synthetic voices.
+                    </p>
+                    <a href="{{ url_for('audio_detection') }}" class="feature-link">
+                        Scan Audio <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <h3 class="feature-title">QR Code Fraud Detection</h3>
+                    <p class="feature-description">
+                        Scans the QR code and looks for any suspicious or malicious content
+                        and after identifying it displays the suspicious behavior.
+                    </p>
+                    <a href="{{ url_for('qr_detection') }}" class="feature-link">
+                        Scan QR <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- How It Works Section -->
+<section class="how-it-works-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Advanced AI-powered analysis in three simple steps</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Submit Content</h3>
+                    <p class="step-description">
+                        Upload or paste the URL, email content, or audio file you want to analyze.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">AI Analysis</h3>
+                    <p class="step-description">
+                        Our machine learning models analyze multiple features and patterns in real-time.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Get Results</h3>
+                    <p class="step-description">
+                        Receive instant risk assessment with detailed warnings and recommendations.
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- About Team Section -->
+<section class="team-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">About Our Team</h2>
+            <p class="section-subtitle">Cybersecurity experts dedicated to protecting you</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="about-card">
+                    <p class="about-text">
+                        PhishGuard AI is developed by a team of students from vit ap 
+                        committed to combating the growing threat of phishing attacks. Our mission is to make 
+                        advanced threat detection accessible to everyone, protecting individuals and organizations 
+                        from sophisticated social engineering attacks.
+                    </p>
+                    <p class="about-text mb-0">
+                        Using machine learning algorithms and continuous threat intelligence, 
+                        we provide real-time protection against URLs, emails, and voice-based phishing attempts. 
+                        Our system is constantly updated to detect emerging threats and new attack vectors.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content text-center">
+            <h2 class="cta-title">Ready to Protect Yourself?</h2>
+            <p class="cta-subtitle">Start scanning for phishing threats now</p>
+            <a href="{{ url_for('url_detection') }}" class="btn btn-cyber btn-lg">
+                <i class="fas fa-shield-alt"></i> Start Scanning
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

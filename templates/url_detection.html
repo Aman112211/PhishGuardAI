@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}URL Phishing Detection - PhishGuard AI{% endblock %}
+
+{% block content %}
+<section class="detection-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="detection-header text-center mb-5">
+                    <div class="detection-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h1 class="detection-title">URL Phishing Detection</h1>
+                    <p class="detection-subtitle">
+                        Analyze suspicious URLs and links to detect potential phishing attempts
+                    </p>
+                </div>
+
+                <div class="detection-card">
+                    <form id="urlForm">
+                        <div class="mb-4">
+                            <label for="urlInput" class="form-label">
+                                <i class="fas fa-globe"></i> Enter URL to Analyze
+                            </label>
+                            <div class="input-group">
+                                <input 
+                                    type="text" 
+                                    class="form-control form-control-cyber" 
+                                    id="urlInput" 
+                                    placeholder="https://example.com"
+                                    required
+                                >
+                                <button class="btn btn-cyber" type="submit" id="scanBtn">
+                                    <i class="fas fa-search"></i> Scan URL
+                                </button>
+                            </div>
+                            <small class="form-text">Example: http://suspicious-website.com/login</small>
+                        </div>
+                    </form>
+
+                    <!-- Loading Spinner -->
+                    <div id="loading" class="loading-spinner" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Analyzing...</span>
+                        </div>
+                        <p class="mt-3">Analyzing URL...</p>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="results" style="display: none;">
+                        <div class="alert alert-cyber" id="resultAlert">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-chart-pie"></i> Analysis Results
+                                </h4>
+                                <span class="badge" id="riskBadge"></span>
+                            </div>
+
+                            <div class="result-url mb-3">
+                                <strong>Analyzed URL:</strong>
+                                <p class="text-break mb-0" id="analyzedUrl"></p>
+                            </div>
+
+                            <div class="risk-meter mb-4">
+                                <label class="mb-2"><strong>Risk Score</strong></label>
+                                <div class="progress" style="height: 30px;">
+                                    <div 
+                                        class="progress-bar progress-bar-striped progress-bar-animated" 
+                                        id="riskProgress"
+                                        role="progressbar" 
+                                        style="width: 0%"
+                                    >
+                                        <span id="riskScore">0</span>%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="classification mb-4">
+                                <h5><i class="fas fa-diagnoses"></i> Classification</h5>
+                                <p class="lead mb-0" id="classification"></p>
+                            </div>
+
+                            <div class="warnings" id="warningsSection">
+                                <h5><i class="fas fa-exclamation-triangle"></i> Detected Issues</h5>
+                                <ul class="warning-list" id="warningsList"></ul>
+                            </div>
+
+                            <div class="features-detected mt-4">
+                                <h5><i class="fas fa-list-check"></i> Technical Analysis</h5>
+                                <div class="row g-3" id="featuresGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="info-section mt-5">
+                    <h3 class="mb-4"><i class="fas fa-lightbulb"></i> What We Check</h3>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>URL length and structure</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>IP address usage</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Suspicious characters</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Domain reputation</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Subdomain analysis</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>HTTPS implementation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('urlForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const urlInput = document.getElementById('urlInput').value.trim();
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+
+    if (!urlInput) {
+        alert('Please enter a URL');
+        return;
+    }
+
+    // Show loading, hide results
+    loading.style.display = 'block';
+    results.style.display = 'none';
+
+    try {
+        const response = await fetch('/api/analyze-url', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url: urlInput })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            displayResults(data);
+        } else {
+            alert('Error: ' + (data.error || 'Analysis failed'));
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        loading.style.display = 'none';
+    }
+});
+
+function displayResults(data) {
+    const results = document.getElementById('results');
+    const resultAlert = document.getElementById('resultAlert');
+    const riskBadge = document.getElementById('riskBadge');
+    const analyzedUrl = document.getElementById('analyzedUrl');
+    const riskProgress = document.getElementById('riskProgress');
+    const riskScore = document.getElementById('riskScore');
+    const classification = document.getElementById('classification');
+    const warningsList = document.getElementById('warningsList');
+    const featuresGrid = document.getElementById('featuresGrid');
+
+    // Set color scheme
+    const colorClass = data.color === 'danger' ? 'alert-danger' : 
+                       data.color === 'warning' ? 'alert-warning' : 'alert-success';
+    resultAlert.className = 'alert alert-cyber ' + colorClass;
+
+    // Set badge
+    riskBadge.className = 'badge bg-' + data.color;
+    riskBadge.textContent = data.classification;
+
+    // Set URL
+    analyzedUrl.textContent = data.url;
+
+    // Set risk score
+    riskScore.textContent = data.risk_score;
+    riskProgress.style.width = data.risk_score + '%';
+    riskProgress.className = 'progress-bar progress-bar-striped progress-bar-animated bg-' + data.color;
+
+    // Set classification
+    classification.textContent = data.classification;
+
+    // Set warnings
+    warningsList.innerHTML = '';
+    if (data.warnings && data.warnings.length > 0) {
+        data.warnings.forEach(warning => {
+            const li = document.createElement('li');
+            li.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + warning;
+            warningsList.appendChild(li);
+        });
+    } else {
+        warningsList.innerHTML = '<li><i class="fas fa-check-circle"></i> No suspicious patterns detected</li>';
+    }
+
+    // Set features
+    featuresGrid.innerHTML = '';
+    if (data.features) {
+        for (const [key, value] of Object.entries(data.features)) {
+            const col = document.createElement('div');
+            col.className = 'col-md-6';
+            col.innerHTML = `
+                <div class="feature-item">
+                    <strong>${key.replace(/_/g, ' ').toUpperCase()}:</strong>
+                    <span>${value}</span>
+                </div>
+            `;
+            featuresGrid.appendChild(col);
+        }
+    }
+
+    // Show results
+    results.style.display = 'block';
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+{% endblock %}

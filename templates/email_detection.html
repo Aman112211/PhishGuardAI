@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Email Phishing Detection - PhishGuard AI{% endblock %}
+
+{% block content %}
+<section class="detection-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="detection-header text-center mb-5">
+                    <div class="detection-icon">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+                    <h1 class="detection-title">Email/Message Phishing Detection</h1>
+                    <p class="detection-subtitle">
+                        Analyze emails and messages to identify potential phishing attempts and social engineering
+                    </p>
+                </div>
+
+                <div class="detection-card">
+                    <form id="emailForm">
+                        <div class="mb-4">
+                            <label for="senderInput" class="form-label">
+                                <i class="fas fa-user"></i> Sender Email Address
+                            </label>
+                            <input 
+                                type="email" 
+                                class="form-control form-control-cyber" 
+                                id="senderInput" 
+                                placeholder="sender@example.com"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="subjectInput" class="form-label">
+                                <i class="fas fa-heading"></i> Email Subject
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control form-control-cyber" 
+                                id="subjectInput" 
+                                placeholder="Enter email subject"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="contentInput" class="form-label">
+                                <i class="fas fa-file-alt"></i> Email Content/Body
+                            </label>
+                            <textarea 
+                                class="form-control form-control-cyber" 
+                                id="contentInput" 
+                                rows="8"
+                                placeholder="Paste the email content here..."
+                                required
+                            ></textarea>
+                            <small class="form-text">Include the full email body including any links</small>
+                        </div>
+
+                        <button class="btn btn-cyber w-100" type="submit" id="scanBtn">
+                            <i class="fas fa-search"></i> Analyze Email
+                        </button>
+                    </form>
+
+                    <!-- Loading Spinner -->
+                    <div id="loading" class="loading-spinner" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Analyzing...</span>
+                        </div>
+                        <p class="mt-3">Analyzing email content...</p>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="results" style="display: none;">
+                        <div class="alert alert-cyber" id="resultAlert">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-chart-pie"></i> Analysis Results
+                                </h4>
+                                <span class="badge" id="riskBadge"></span>
+                            </div>
+
+                            <div class="risk-meter mb-4">
+                                <label class="mb-2"><strong>Risk Score</strong></label>
+                                <div class="progress" style="height: 30px;">
+                                    <div 
+                                        class="progress-bar progress-bar-striped progress-bar-animated" 
+                                        id="riskProgress"
+                                        role="progressbar" 
+                                        style="width: 0%"
+                                    >
+                                        <span id="riskScore">0</span>%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="classification mb-4">
+                                <h5><i class="fas fa-diagnoses"></i> Classification</h5>
+                                <p class="lead mb-0" id="classification"></p>
+                            </div>
+
+                            <div class="warnings" id="warningsSection">
+                                <h5><i class="fas fa-exclamation-triangle"></i> Detected Red Flags</h5>
+                                <ul class="warning-list" id="warningsList"></ul>
+                            </div>
+
+                            <div class="email-stats mt-4">
+                                <h5><i class="fas fa-chart-bar"></i> Content Statistics</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="stat-box">
+                                            <i class="fas fa-link"></i>
+                                            <div>
+                                                <strong>Links Found:</strong>
+                                                <span id="urlCount">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="stat-box">
+                                            <i class="fas fa-percentage"></i>
+                                            <div>
+                                                <strong>Threat Level:</strong>
+                                                <span id="threatLevel">Unknown</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="info-section mt-5">
+                    <h3 class="mb-4"><i class="fas fa-lightbulb"></i> What We Analyze</h3>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Sender authenticity</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Urgency tactics</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Suspicious links</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Social engineering</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Grammar and spelling</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Financial scam indicators</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('emailForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const sender = document.getElementById('senderInput').value.trim();
+    const subject = document.getElementById('subjectInput').value.trim();
+    const content = document.getElementById('contentInput').value.trim();
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+
+    if (!sender || !subject || !content) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    // Show loading, hide results
+    loading.style.display = 'block';
+    results.style.display = 'none';
+
+    try {
+        const response = await fetch('/api/analyze-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                sender: sender,
+                subject: subject,
+                content: content 
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            displayResults(data);
+        } else {
+            alert('Error: ' + (data.error || 'Analysis failed'));
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        loading.style.display = 'none';
+    }
+});
+
+function displayResults(data) {
+    const results = document.getElementById('results');
+    const resultAlert = document.getElementById('resultAlert');
+    const riskBadge = document.getElementById('riskBadge');
+    const riskProgress = document.getElementById('riskProgress');
+    const riskScore = document.getElementById('riskScore');
+    const classification = document.getElementById('classification');
+    const warningsList = document.getElementById('warningsList');
+    const urlCount = document.getElementById('urlCount');
+    const threatLevel = document.getElementById('threatLevel');
+
+    // Set color scheme
+    const colorClass = data.color === 'danger' ? 'alert-danger' : 
+                       data.color === 'warning' ? 'alert-warning' : 'alert-success';
+    resultAlert.className = 'alert alert-cyber ' + colorClass;
+
+    // Set badge
+    riskBadge.className = 'badge bg-' + data.color;
+    riskBadge.textContent = data.classification;
+
+    // Set risk score
+    riskScore.textContent = data.risk_score;
+    riskProgress.style.width = data.risk_score + '%';
+    riskProgress.className = 'progress-bar progress-bar-striped progress-bar-animated bg-' + data.color;
+
+    // Set classification
+    classification.textContent = data.classification;
+
+    // Set warnings
+    warningsList.innerHTML = '';
+    if (data.warnings && data.warnings.length > 0) {
+        data.warnings.forEach(warning => {
+            const li = document.createElement('li');
+            li.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + warning;
+            warningsList.appendChild(li);
+        });
+    } else {
+        warningsList.innerHTML = '<li><i class="fas fa-check-circle"></i> No suspicious patterns detected</li>';
+    }
+
+    // Set stats
+    urlCount.textContent = data.url_count || 0;
+    threatLevel.textContent = data.classification.split(' - ')[0];
+
+    // Show results
+    results.style.display = 'block';
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+{% endblock %}

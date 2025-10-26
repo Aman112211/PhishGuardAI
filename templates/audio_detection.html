@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Audio Call Fraud Detection - PhishGuard AI{% endblock %}
+
+{% block content %}
+<section class="detection-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="detection-header text-center mb-5">
+                    <div class="detection-icon">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <h1 class="detection-title">Audio Call Fraud Detection</h1>
+                    <p class="detection-subtitle">
+                        Upload recorded phone calls to detect deepfake audio and fraudulent voice patterns
+                    </p>
+                </div>
+
+                <div class="detection-card">
+                    <form id="audioForm" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label for="audioInput" class="form-label">
+                                <i class="fas fa-file-audio"></i> Upload Audio File
+                            </label>
+                            <input 
+                                type="file" 
+                                class="form-control form-control-cyber" 
+                                id="audioInput" 
+                                accept=".mp3,.wav,.ogg,.m4a"
+                                required
+                            >
+                            <small class="form-text">
+                                Supported formats: MP3, WAV, OGG, M4A (Max 16MB)
+                            </small>
+                        </div>
+
+                        <div class="file-info mb-4" id="fileInfo" style="display: none;">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Selected File:</strong> <span id="fileName"></span>
+                                <br>
+                                <strong>Size:</strong> <span id="fileSize"></span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-cyber w-100" type="submit" id="scanBtn">
+                            <i class="fas fa-upload"></i> Analyze Audio
+                        </button>
+                    </form>
+
+                    <!-- Loading Spinner -->
+                    <div id="loading" class="loading-spinner" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Analyzing...</span>
+                        </div>
+                        <p class="mt-3">Analyzing audio patterns...</p>
+                        <small>This may take a few moments</small>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="results" style="display: none;">
+                        <div class="alert alert-cyber" id="resultAlert">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-chart-pie"></i> Analysis Results
+                                </h4>
+                                <span class="badge" id="riskBadge"></span>
+                            </div>
+
+                            <div class="result-file mb-3">
+                                <strong>Analyzed File:</strong>
+                                <p class="mb-0" id="analyzedFile"></p>
+                            </div>
+
+                            <div class="risk-meter mb-4">
+                                <label class="mb-2"><strong>Risk Score</strong></label>
+                                <div class="progress" style="height: 30px;">
+                                    <div 
+                                        class="progress-bar progress-bar-striped progress-bar-animated" 
+                                        id="riskProgress"
+                                        role="progressbar" 
+                                        style="width: 0%"
+                                    >
+                                        <span id="riskScore">0</span>%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="classification mb-4">
+                                <h5><i class="fas fa-diagnoses"></i> Classification</h5>
+                                <p class="lead mb-0" id="classification"></p>
+                            </div>
+
+                            <div class="warnings mb-4" id="warningsSection">
+                                <h5><i class="fas fa-exclamation-triangle"></i> Detected Anomalies</h5>
+                                <ul class="warning-list" id="warningsList"></ul>
+                            </div>
+
+                            <div class="detection-factors mt-4">
+                                <h5><i class="fas fa-brain"></i> AI Analysis Factors</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Factor</th>
+                                                <th>Result</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="factorsTable"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="info-section mt-5">
+                    <h3 class="mb-4"><i class="fas fa-lightbulb"></i> Audio Analysis Features</h3>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Voice pattern analysis</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Deepfake detection</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Background noise analysis</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Speech rate detection</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Emotional tone analysis</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Audio quality assessment</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warning Box -->
+                <div class="alert alert-warning mt-4">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Note:</strong> This is a demonstration system. For production use, integrate with 
+                    advanced ML models trained on large deepfake audio datasets for higher accuracy.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// File input change handler
+document.getElementById('audioInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = formatFileSize(file.size);
+        document.getElementById('fileInfo').style.display = 'block';
+    }
+});
+
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+document.getElementById('audioForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const fileInput = document.getElementById('audioInput');
+    const file = fileInput.files[0];
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+
+    if (!file) {
+        alert('Please select an audio file');
+        return;
+    }
+
+    // Check file size (16MB limit)
+    if (file.size > 16 * 1024 * 1024) {
+        alert('File size exceeds 16MB limit');
+        return;
+    }
+
+    // Show loading, hide results
+    loading.style.display = 'block';
+    results.style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('audio_file', file);
+
+    try {
+        const response = await fetch('/api/analyze-audio', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            displayResults(data);
+        } else {
+            alert('Error: ' + (data.error || 'Analysis failed'));
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    } finally {
+        loading.style.display = 'none';
+    }
+});
+
+function displayResults(data) {
+    const results = document.getElementById('results');
+    const resultAlert = document.getElementById('resultAlert');
+    const riskBadge = document.getElementById('riskBadge');
+    const analyzedFile = document.getElementById('analyzedFile');
+    const riskProgress = document.getElementById('riskProgress');
+    const riskScore = document.getElementById('riskScore');
+    const classification = document.getElementById('classification');
+    const warningsList = document.getElementById('warningsList');
+    const factorsTable = document.getElementById('factorsTable');
+
+    // Set color scheme
+    const colorClass = data.color === 'danger' ? 'alert-danger' : 
+                       data.color === 'warning' ? 'alert-warning' : 'alert-success';
+    resultAlert.className = 'alert alert-cyber ' + colorClass;
+
+    // Set badge
+    riskBadge.className = 'badge bg-' + data.color;
+    riskBadge.textContent = data.classification;
+
+    // Set filename
+    analyzedFile.textContent = data.filename;
+
+    // Set risk score
+    riskScore.textContent = data.risk_score;
+    riskProgress.style.width = data.risk_score + '%';
+    riskProgress.className = 'progress-bar progress-bar-striped progress-bar-animated bg-' + data.color;
+
+    // Set classification
+    classification.textContent = data.classification;
+
+    // Set warnings
+    warningsList.innerHTML = '';
+    if (data.warnings && data.warnings.length > 0) {
+        data.warnings.forEach(warning => {
+            const li = document.createElement('li');
+            li.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + warning;
+            warningsList.appendChild(li);
+        });
+    } else {
+        warningsList.innerHTML = '<li><i class="fas fa-check-circle"></i> No suspicious patterns detected</li>';
+    }
+
+    // Set detection factors
+    factorsTable.innerHTML = '';
+    if (data.detection_factors) {
+        data.detection_factors.forEach(([factor, result]) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${factor}</strong></td>
+                <td>${result}</td>
+            `;
+            factorsTable.appendChild(tr);
+        });
+    }
+
+    // Show results
+    results.style.display = 'block';
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+{% endblock %}
