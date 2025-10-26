@@ -1,1 +1,19 @@
 download this file https://drive.google.com/file/d/1cP7O09clrLJZgZi5j9nYQjCGpiE0HMIj/view?usp=drive_link
+
+# Flask web framework
+pip install Flask
+
+# Data processing and ML
+pip install pandas numpy scikit-learn xgboost
+
+# QR and image handling
+pip install PyZbar pillow
+
+# File uploads and security
+pip install werkzeug
+
+# Audio transcription (OpenAI Whisper)
+pip install openai-whisper torch
+
+# If you use torchvision/torchaudio and want CUDA support (NVIDIA GPU):
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
